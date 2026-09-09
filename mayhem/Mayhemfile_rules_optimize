@@ -1,0 +1,15 @@
+# Mayhem target `rules_optimize` — the hashcat-utils `rules_optimize` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/rules_optimize. Raw (non-libFuzzer, process-per-input) target:
+# `rules_optimize < rules` — reads hashcat rules on stdin and runs them through the CPU rule engine (src/cpu_rules.c). No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: rules_optimize
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/rules_optimize/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/rules_optimize
+    timeout: 5

@@ -1,0 +1,15 @@
+# Mayhem target `cleanup-rules` — the hashcat-utils `cleanup-rules` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/cleanup-rules. Raw (non-libFuzzer, process-per-input) target:
+# reads a hashcat rule file on stdin (mode 1 = CPU rule set) and writes the cleaned rules. No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: cleanup-rules
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/cleanup-rules/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/cleanup-rules 1
+    timeout: 5

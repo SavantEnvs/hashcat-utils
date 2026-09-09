@@ -1,0 +1,5 @@
+project: savantenvs/hashcat-utils
+target: fuzz_rules
+cmds:
+  - cmd: /mayhem/fuzz_rules
+    libfuzzer: true

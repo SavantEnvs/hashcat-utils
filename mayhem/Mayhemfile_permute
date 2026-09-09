@@ -1,0 +1,22 @@
+# Mayhem target `permute` — the hashcat-utils `permute` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/permute. Raw (non-libFuzzer, process-per-input) target:
+# `permute < infile` — reads words on stdin. No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+# permute emits every permutation of each line (n! lines), so a long line can never finish (a saved 16+ byte
+# line failed the start-up check, run #5): the fuzz build carries a deterministic OUTPUT budget instead of a
+# clock -- after 4 MiB of output the tool exits with status 3 (mayhem/harnesses/output_budget.c, see build.sh).
+# The seed keeps words <= 5 chars.
+# Known real findings: a 1-character line (`A`) is an ASan stack-buffer-overflow in next_permutation (also
+# Mayhem's default test case), so expect that defect on run start; lines of ~2-8 KiB overflow out_push()'s
+# output buffer (ASan, src/permute.c:46).
+project: savantenvs/hashcat-utils
+target: permute
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/permute/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/permute
+    timeout: 5

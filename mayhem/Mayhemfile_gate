@@ -1,0 +1,15 @@
+# Mayhem target `gate` — the hashcat-utils `gate` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/gate. Raw (non-libFuzzer, process-per-input) target:
+# `gate mod offset < infile` — reads words on stdin. No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: gate
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/gate/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/gate 2 0
+    timeout: 5

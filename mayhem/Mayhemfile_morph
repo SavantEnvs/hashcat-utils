@@ -1,0 +1,18 @@
+# Mayhem target `morph` — the hashcat-utils `morph` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/morph. Raw (non-libFuzzer, process-per-input) target:
+# `morph dictionary depth width pos_min pos_max` — the dictionary argument is the fuzz file.
+# morph pays a fixed ~0.5 s (sanitized) key-table build per execution before it reads the dictionary,
+# which overruns Mayhem's 2 s default per-input timeout under its tracer (run #1 failed the sanity
+# check on `A`), so this cmd raises `timeout:` to 60 s; that per-test limit is also what bounds a slow or
+# hanging input (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: morph
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/morph/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/morph @@ 1 1 1 4
+    timeout: 60

@@ -1,0 +1,18 @@
+# Mayhem target `keyspace` — the hashcat-utils `keyspace` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/keyspace. Raw (non-libFuzzer, process-per-input) target:
+# `keyspace [options] mask` — argv-only tool: the fuzz file supplies the arguments (mask, -1..-4 custom charsets, ...), one per line (mayhem/harnesses/argv_main.c).
+# keyspace pays a fixed ~0.5 s (sanitized) Markov-table setup per execution before it parses the mask,
+# which overruns Mayhem's 2 s default per-input timeout under its tracer (run #1 failed the sanity
+# check on `A`), so this cmd raises `timeout:` to 60 s; that per-test limit is also what bounds a slow or
+# hanging input (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: keyspace
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/keyspace/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/keyspace @@
+    timeout: 60

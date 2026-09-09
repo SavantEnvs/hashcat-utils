@@ -1,0 +1,15 @@
+# Mayhem target `ct3_to_ntlm` — the hashcat-utils `ct3_to_ntlm` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/ct3_to_ntlm. Raw (non-libFuzzer, process-per-input) target:
+# `ct3_to_ntlm 8-byte-ct3-in-hex 8-byte-salt-in-hex [24-byte-ESS-in-hex]` — argv-only tool: the fuzz file supplies the arguments, one per line (mayhem/harnesses/argv_main.c).
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: ct3_to_ntlm
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/ct3_to_ntlm/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/ct3_to_ntlm @@
+    timeout: 5

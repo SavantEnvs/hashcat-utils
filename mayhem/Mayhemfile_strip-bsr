@@ -1,0 +1,15 @@
+# Mayhem target `strip-bsr` — the hashcat-utils `strip-bsr` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/strip-bsr. Raw (non-libFuzzer, process-per-input) target:
+# `strip-bsr < infile` — reads lines on stdin. No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: strip-bsr
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/strip-bsr/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/strip-bsr
+    timeout: 5

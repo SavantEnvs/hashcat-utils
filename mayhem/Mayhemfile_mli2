@@ -1,0 +1,15 @@
+# Mayhem target `mli2` — the hashcat-utils `mli2` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/mli2. Raw (non-libFuzzer, process-per-input) target:
+# `mli2 infile mergefile` — both sorted-list arguments are the fuzz file.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: mli2
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/mli2/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/mli2 @@ @@
+    timeout: 5

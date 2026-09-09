@@ -1,0 +1,15 @@
+# Mayhem target `splitlen` — the hashcat-utils `splitlen` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/splitlen. Raw (non-libFuzzer, process-per-input) target:
+# `splitlen outdir < infile` — reads words on stdin; the 64 per-length output files go under /tmp (an absolute tmpfs path is sanctioned by SPEC §6.2 item 13). Run #1 wrote them into the working directory and Mayhem's own runner (mayhem-fuzz) fell into a restart loop there, so the output is kept out of the cwd. No `@@`, so Mayhem delivers the fuzz bytes on stdin.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: splitlen
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/splitlen/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/splitlen /tmp
+    timeout: 5

@@ -1,0 +1,15 @@
+# Mayhem target `combinator` — the hashcat-utils `combinator` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/combinator. Raw (non-libFuzzer, process-per-input) target:
+# `combinator file1 file2` — both wordlist arguments are the fuzz file.
+# A slow or hanging input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+project: savantenvs/hashcat-utils
+target: combinator
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/combinator/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/combinator @@ @@
+    timeout: 5

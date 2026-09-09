@@ -1,0 +1,17 @@
+# Mayhem target `generate-rules` — the hashcat-utils `generate-rules` command-line tool, one of the package's public
+# utilities (src/Makefile `native:`), built sanitized (ASan+UBSan, halting) + SanCov + DWARF-3 by
+# mayhem/build.sh at /mayhem/cli/generate-rules. Raw (non-libFuzzer, process-per-input) target:
+# `generate-rules number [seed]` — argv-only tool: the fuzz file supplies the arguments, one per line (mayhem/harnesses/argv_main.c).
+# A slow input is bounded by Mayhem's own per-test limit, the explicit 5 s `timeout:` below (no in-process watchdog).
+# A request for more than 250 rules (the tool accepts up to 10^9, ~0.17 ms each sanitized) is refused with exit
+# status 3 before the tool starts -- a deterministic count budget, not a clock (mayhem/harnesses/argv_main.c).
+project: savantenvs/hashcat-utils
+target: generate-rules
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/generate-rules/testsuite
+
+cmds:
+  - cmd: /mayhem/cli/generate-rules @@
+    timeout: 5
